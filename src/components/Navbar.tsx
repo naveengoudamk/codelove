@@ -25,6 +25,9 @@ const Navbar = () => {
                     </SignInButton>
                 </SignedOut>
                 <SignedIn>
+                    <Link href="/profile" style={{ marginRight: '1rem', color: '#a3a3a3', fontSize: '0.9rem', fontWeight: 500 }}>
+                        My Profile
+                    </Link>
                     <UserButton />
                 </SignedIn>
                 <button className={styles.premiumBtn}>Premium</button>

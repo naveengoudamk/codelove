@@ -1,0 +1,291 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    display: flex;
+    gap: 1.5rem;
+    color: var(--foreground);
+}
+
+/* Left Sidebar */
+.leftPanel {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.profileCard {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.avatarContainer {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.avatar {
+    object-fit: cover;
+}
+
+.userInfo h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.userInfo .username {
+    color: #a3a3a3;
+    font-size: 0.9rem;
+}
+
+.rank {
+    font-size: 0.9rem;
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.editButton {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(38, 38, 38, 0.8);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.editButton:hover {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.statsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: #a3a3a3;
+}
+
+.badgesSection {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1rem;
+    border: 1px solid var(--border);
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Right Content */
+.rightPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.gridStats {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+}
+
+.solvedCard {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.circleChart {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--surface) 79%, transparent 80% 100%),
+        conic-gradient(var(--warning) 30%, var(--surface) 0);
+    /* Simple static representation */
+}
+
+/* For better visualization we will use SVG in TSX, but styling basics here */
+.circleInner {
+    text-align: center;
+}
+
+.circleInner .total {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--foreground);
+}
+
+.circleInner .label {
+    font-size: 0.75rem;
+    color: #a3a3a3;
+}
+
+.details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.detailRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.detailRow .count {
+    font-weight: 600;
+}
+
+.easy {
+    color: var(--success);
+}
+
+.medium {
+    color: var(--warning);
+}
+
+.hard {
+    color: var(--error);
+}
+
+.badgeCard {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1rem;
+}
+
+.heatmapSection {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+}
+
+.heatmapTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #a3a3a3;
+}
+
+.heatmapGrid {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.heatBox {
+    width: 12px;
+    height: 12px;
+    background: #262626;
+    border-radius: 2px;
+}
+
+.recentActivity {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 0;
+    overflow: hidden;
+}
+
+.activityHeader {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+}
+
+.activityList {
+    display: flex;
+    flex-direction: column;
+}
+
+.activityItem {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #262626;
+    transition: background 0.2s;
+}
+
+.activityItem:last-child {
+    border-bottom: none;
+}
+
+.activityItem:hover {
+    background: var(--surface-hover);
+}
+
+.activityDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.problemName {
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.timeAgo {
+    font-size: 0.8rem;
+    color: #737373;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .leftPanel {
+        width: 100%;
+    }
+
+    .gridStats {
+        grid-template-columns: 1fr;
+    }
+}
