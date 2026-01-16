@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import styles from "../login/page.module.css"; // Reuse login styles
 import { Mail, Phone, User } from "lucide-react";
