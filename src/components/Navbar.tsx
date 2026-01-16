@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import styles from './Navbar.module.css';
 import { Code2 } from 'lucide-react';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 const Navbar = () => {
     return (
@@ -18,7 +19,14 @@ const Navbar = () => {
             </div>
 
             <div className={styles.authButtons}>
-                <Link href="/login" className={styles.signInBtn}>Sign In</Link>
+                <SignedOut>
+                    <SignInButton mode="modal">
+                        <button className={styles.signInBtn}>Sign In</button>
+                    </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
                 <button className={styles.premiumBtn}>Premium</button>
             </div>
         </nav>
