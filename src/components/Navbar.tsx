@@ -18,7 +18,7 @@ const Navbar = () => {
             </div>
 
             <div className={styles.authButtons}>
-                <button className={styles.signInBtn}>Sign In</button>
+                <Link href="/login" className={styles.signInBtn}>Sign In</Link>
                 <button className={styles.premiumBtn}>Premium</button>
             </div>
         </nav>
