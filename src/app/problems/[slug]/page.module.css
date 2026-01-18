@@ -35,6 +35,35 @@
     gap: 1rem;
 }
 
+.languageSelector {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.select {
+    appearance: none;
+    background: transparent;
+    color: var(--foreground);
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding-right: 1.5rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.select:focus {
+    outline: none;
+}
+
+.selectIcon {
+    position: absolute;
+    right: 0;
+    pointer-events: none;
+    color: #a3a3a3;
+}
+
 .tab {
     cursor: pointer;
     padding: 0.25rem 0.5rem;
@@ -91,18 +120,34 @@
     padding: 0.75rem 1rem;
     border-top: 1px solid var(--border);
     display: flex;
+    align-items: center;
     justify-content: flex-end;
-    gap: 1rem;
+    gap: 0.75rem;
     background: #202020;
+    height: 60px;
 }
 
 .runBtn,
-.submitBtn {
-    padding: 0.5rem 1.5rem;
+.submitBtn,
+.consoleToggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
     border-radius: 4px;
     font-weight: 600;
     font-size: 0.9rem;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
+}
+
+.consoleToggle {
+    background: transparent;
+    color: #a3a3a3;
+}
+
+.consoleToggle:hover {
+    background: var(--surface-hover);
+    color: var(--foreground);
 }
 
 .runBtn {
@@ -118,4 +163,72 @@
 .runBtn:hover,
 .submitBtn:hover {
     opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.runBtn:disabled,
+.submitBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Console Panel */
+.console {
+    position: absolute;
+    bottom: 60px;
+    /* Above action bar */
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: #1e1e1e;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+.consoleHeader {
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #252526;
+    border-bottom: 1px solid #333;
+}
+
+.consoleOutput {
+    flex: 1;
+    padding: 1rem;
+    overflow: auto;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+}
+
+.successText {
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.errorText {
+    color: var(--error);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.closeConsoleBtn {
+    font-size: 1.2rem;
+    color: #a3a3a3;
+    padding: 0 0.5rem;
+}
+
+.closeConsoleBtn:hover {
+    color: var(--foreground);
 }
