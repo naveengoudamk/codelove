@@ -264,17 +264,7 @@ export default function ProblemsPage() {
                     </div>
                 </div>
 
-                {/* Trending Companies */}
-                <div className={styles.widget}>
-                    <div className={styles.widgetTitle}>Trending Companies</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {trendingCompanies.map((c) => (
-                            <span key={c.name} className={styles.companyTag}>
-                                {c.name} <span style={{ opacity: 0.5, fontSize: '0.9em' }}>{c.count}</span>
-                            </span>
-                        ))}
-                    </div>
-                </div>
+
             </div>
         </div>
     );
