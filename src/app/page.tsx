@@ -30,7 +30,9 @@ export default function Home() {
           Join the community of developers mastering data structures and algorithms.
           Practice with premium problems and land your dream job.
         </p>
-        <button className={styles.ctaButton}>Start Coding Now</button>
+        <Link href="/problems">
+          <button className={styles.ctaButton}>Start Coding Now</button>
+        </Link>
       </section>
 
       <section className={styles.problemsSection}>
