@@ -1,6 +1,6 @@
 import Link from "next/link";
 import styles from "./page.module.css";
-import { CheckCircle2, Lock, FileText, BarChart3 } from "lucide-react";
+import { CheckCircle2, Lock, FileText, Flame, Calendar, Gift, Zap } from "lucide-react";
 
 // Mock Data for Problems
 const problems = [
@@ -195,29 +195,70 @@ export default function ProblemsPage() {
 
             {/* Right Sidebar */}
             <div className={styles.sidebar}>
+                {/* Daily Streak Widget */}
+                <div className={`${styles.widget} ${styles.streakWidget}`}>
+                    <div className={styles.widgetTitle}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fbbf24' }}>
+                            <Flame size={20} fill="#fbbf24" />
+                            <span>Daily Streak</span>
+                        </div>
+                    </div>
+                    <div className={styles.streakContent}>
+                        <div className={styles.streakCount}>18</div>
+                        <div style={{ textAlign: 'right', fontSize: '0.9rem', color: '#a1a1aa' }}>
+                            <div>Current Streak</div>
+                            <div style={{ fontSize: '0.8rem' }}>Keep it up!</div>
+                        </div>
+                    </div>
+                    <button className={styles.solveBtn}>
+                        <Zap size={18} />
+                        Solve Daily Problem
+                    </button>
+                </div>
+
+                {/* Monthly Gift Widget */}
+                <div className={`${styles.widget} ${styles.giftWidget}`}>
+                    <div className={styles.giftHeader}>
+                        <div className={styles.widgetTitle} style={{ margin: 0 }}>Monthly Goal</div>
+                        <Gift size={20} color="var(--primary)" />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                        <span>18 / 30 Days</span>
+                        <span style={{ color: 'var(--success)' }}>60%</span>
+                    </div>
+                    <div className={styles.progressBar}>
+                        <div className={styles.progressFill} style={{ width: '60%' }} />
+                    </div>
+                    <div className={styles.giftFooter}>
+                        <div className={`${styles.giftBox} ${false ? styles.active : ''}`} title="Complete 30 days to unlock!">
+                            <Gift size={20} color={false ? 'white' : 'var(--foreground)'} />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Calendar / Day placeholder */}
                 <div className={styles.widget}>
                     <div className={styles.widgetTitle} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Day 18</span>
-                        <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>19:45:06 left</span>
+                        <span>January 2026</span>
                     </div>
                     <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                         {/* Simple calendar visualization items */}
-                        {Array.from({ length: 14 }).map((_, i) => (
+                        {Array.from({ length: 31 }).map((_, i) => (
                             <div
                                 key={i}
                                 style={{
                                     width: '30px',
                                     height: '30px',
-                                    borderRadius: '15px',
-                                    background: i === 0 ? 'var(--success)' : 'rgba(255,255,255,0.05)',
+                                    borderRadius: '50%',
+                                    background: i < 18 ? 'var(--success)' : i === 18 ? 'var(--warning)' : 'rgba(255,255,255,0.05)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontSize: '0.7rem'
+                                    fontSize: '0.7rem',
+                                    color: i < 18 ? 'black' : 'inherit'
                                 }}
                             >
-                                {18 + i}
+                                {i + 1}
                             </div>
                         ))}
                     </div>
