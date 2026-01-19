@@ -4,7 +4,7 @@
     justify-content: space-between;
     padding: 0 2rem;
     height: 60px;
-    background-color: var(--surface);
+    background-color: rgba(23, 23, 23, 0.7);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(10px);
     position: sticky;
