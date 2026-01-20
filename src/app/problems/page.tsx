@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import styles from "./page.module.css";
-import { CheckCircle2, Lock, FileText, Flame, Calendar, Gift, Zap } from "lucide-react";
+import { CheckCircle2, Lock, FileText, Flame, Gift, Zap } from "lucide-react";
+import { useUser, SignInButton } from "@clerk/nextjs";
 
 // Mock Data for Problems
 const problems = [
@@ -141,15 +144,11 @@ const problems = [
     },
 ];
 
-const trendingCompanies = [
-    { name: "Google", count: 2192 },
-    { name: "Meta", count: 1373 },
-    { name: "Bloomberg", count: 1161 },
-    { name: "Microsoft", count: 1327 },
-    { name: "Amazon", count: 1911 },
-];
+
 
 export default function ProblemsPage() {
+    const { isSignedIn, isLoaded } = useUser();
+
     return (
         <div className={styles.container}>
             {/* Main Content: Problems List */}
@@ -250,24 +249,62 @@ export default function ProblemsPage() {
             {/* Right Sidebar */}
             <div className={styles.sidebar}>
                 {/* Daily Streak Widget */}
-                <div className={`${styles.widget} ${styles.streakWidget}`}>
+                {/* Daily Streak Widget */}
+                <div className={`${styles.widget} ${styles.streakWidget}`} style={{ position: 'relative', overflow: 'hidden' }}>
                     <div className={styles.widgetTitle}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fbbf24' }}>
                             <Flame size={20} fill="#fbbf24" />
                             <span>Daily Streak</span>
                         </div>
                     </div>
-                    <div className={styles.streakContent}>
-                        <div className={styles.streakCount}>18</div>
-                        <div style={{ textAlign: 'right', fontSize: '0.9rem', color: '#a1a1aa' }}>
-                            <div>Current Streak</div>
-                            <div style={{ fontSize: '0.8rem' }}>Keep it up!</div>
+
+                    {!isLoaded ? (
+                        <div className={styles.streakContent} style={{ justifyContent: 'center', opacity: 0.5 }}>
+                            <span>Loading...</span>
                         </div>
-                    </div>
-                    <button className={styles.solveBtn}>
-                        <Zap size={18} />
-                        Solve Daily Problem
-                    </button>
+                    ) : isSignedIn ? (
+                        <>
+                            <div className={styles.streakContent}>
+                                <div className={styles.streakCount}>18</div>
+                                <div style={{ textAlign: 'right', fontSize: '0.9rem', color: '#a1a1aa' }}>
+                                    <div>Current Streak</div>
+                                    <div style={{ fontSize: '0.8rem' }}>Keep it up!</div>
+                                </div>
+                            </div>
+                            <button className={styles.solveBtn}>
+                                <Zap size={18} />
+                                Solve Daily Problem
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <div className={styles.streakContent} style={{ filter: 'blur(5px)', pointerEvents: 'none', opacity: 0.7 }}>
+                                <div className={styles.streakCount}>18</div>
+                                <div style={{ textAlign: 'right', fontSize: '0.9rem', color: '#a1a1aa' }}>
+                                    <div>Current Streak</div>
+                                    <div style={{ fontSize: '0.8rem' }}>Keep it up!</div>
+                                </div>
+                            </div>
+                            <div style={{
+                                position: 'absolute',
+                                top: '0',
+                                left: '0',
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                zIndex: 10,
+                                background: 'rgba(0,0,0,0.2)'
+                            }}>
+                                <SignInButton mode="modal">
+                                    <button className={styles.solveBtn} style={{ width: 'auto', padding: '0.5rem 1rem' }}>
+                                        Login to View
+                                    </button>
+                                </SignInButton>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Monthly Gift Widget */}

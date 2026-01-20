@@ -118,11 +118,18 @@ export default function ProfilePage() {
                 <div className={styles.heatmapSection}>
                     <div className={styles.heatmapTitle}>842 submissions in the past one year</div>
                     <div className={styles.heatmapGrid}>
-                        {Array.from({ length: 364 }).map((_, i) => (
-                            <div key={i} className={styles.heatBox} style={{
-                                background: Math.random() > 0.8 ? 'rgba(34, 197, 94, ' + (Math.random() * 0.8 + 0.2) + ')' : '#262626'
-                            }}></div>
-                        ))}
+                        {Array.from({ length: 364 }).map((_, i) => {
+                            // Deterministic pseudo-random
+                            const val = (i * 1337 + 42) % 100;
+                            const isGreen = val > 70;
+                            const opacity = ((val % 80) + 20) / 100;
+
+                            return (
+                                <div key={i} className={styles.heatBox} style={{
+                                    background: isGreen ? `rgba(34, 197, 94, ${opacity})` : '#262626'
+                                }}></div>
+                            );
+                        })}
                     </div>
                 </div>
 
