@@ -2,9 +2,21 @@
 
 import Image from "next/image";
 import styles from "./page.module.css";
-import { MapPin, Link as LinkIcon, Github, Eye, CheckCircle2, MessageSquare, Star, Layers } from "lucide-react";
+import { MapPin, Link as LinkIcon, Github, Eye, CheckCircle2, MessageSquare, Star } from "lucide-react";
+
+import { useUser } from "@clerk/nextjs";
 
 export default function ProfilePage() {
+    const { user, isLoaded, isSignedIn } = useUser();
+
+    if (!isLoaded) {
+        return <div className={styles.container}>Loading...</div>;
+    }
+
+    if (!isSignedIn) {
+        return <div className={styles.container}>Please sign in to view your profile.</div>;
+    }
+
     return (
         <div className={styles.container}>
             {/* Left Sidebar */}
@@ -12,18 +24,18 @@ export default function ProfilePage() {
                 <div className={styles.profileCard}>
                     <div className={styles.avatarContainer}>
                         <Image
-                            src="/file.svg"
+                            src={user.imageUrl || "/file.svg"}
                             alt="Avatar"
                             width={100}
                             height={100}
                             className={styles.avatar}
-                            style={{ background: '#333' }} /* Placeholder bg */
+                            style={{ background: '#333' }}
                         />
                     </div>
 
                     <div className={styles.userInfo}>
-                        <h2>naveengoudamk</h2>
-                        <p className={styles.username}>naveengoudamk</p>
+                        <h2>{user.fullName || user.username || "User"}</h2>
+                        <p className={styles.username}>@{user.username || "user"}</p>
                         <p className={styles.rank}>Rank 375,155</p>
                     </div>
 
