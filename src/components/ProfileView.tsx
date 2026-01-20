@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
-import { MapPin, Link as LinkIcon, Github, Edit2, X, Save } from "lucide-react";
+import { MapPin, Link as LinkIcon, Github, Edit2, X, Save, Camera } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 // Type definition for the profile user
@@ -22,6 +22,20 @@ interface ProfileViewProps {
 export default function ProfileView({ profileUser, isOwner }: ProfileViewProps) {
     const { user } = useUser(); // Current logged in user (for updating)
     const [isEditing, setIsEditing] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Handle Image Upload
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !user) return;
+
+        try {
+            await user.setProfileImage({ file });
+        } catch (err) {
+            console.error("Error updating profile image:", err);
+            alert("Failed to update profile image");
+        }
+    };
 
     // Local state for editing form
     // Safe access to metadata with unknown type
@@ -100,13 +114,41 @@ export default function ProfileView({ profileUser, isOwner }: ProfileViewProps) 
                     gap: "1rem"
                 }}>
                     <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                        <Image
-                            src={profileUser.imageUrl || "/file.svg"}
-                            alt="Avatar"
-                            width={80}
-                            height={80}
-                            style={{ borderRadius: "12px", background: "#333" }}
-                        />
+                        <div
+                            style={{ position: "relative", cursor: isEditing ? "pointer" : "default" }}
+                            onClick={() => isEditing && fileInputRef.current?.click()}
+                        >
+                            <Image
+                                src={profileUser.imageUrl || "/file.svg"}
+                                alt="Avatar"
+                                width={80}
+                                height={80}
+                                style={{ borderRadius: "12px", background: "#333", objectFit: "cover" }}
+                            />
+                            {isEditing && (
+                                <div style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    width: "100%",
+                                    height: "100%",
+                                    background: "rgba(0,0,0,0.5)",
+                                    borderRadius: "12px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}>
+                                    <Camera size={20} color="white" />
+                                </div>
+                            )}
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                style={{ display: "none" }}
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                            />
+                        </div>
                         <div style={{ overflow: "hidden" }}>
                             <h2 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                 {profileUser.fullName || profileUser.username || "User"}
