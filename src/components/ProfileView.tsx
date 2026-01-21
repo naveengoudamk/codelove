@@ -14,12 +14,15 @@ interface ProfileUser {
     publicMetadata?: Record<string, unknown>; // For custom fields like skills, social links
 }
 
+import ContributionGraph from "./ContributionGraph";
+
 interface ProfileViewProps {
     profileUser: ProfileUser;
     isOwner: boolean;
+    submissions?: any[];
 }
 
-export default function ProfileView({ profileUser, isOwner }: ProfileViewProps) {
+export default function ProfileView({ profileUser, isOwner, submissions = [] }: ProfileViewProps) {
     const { user } = useUser(); // Current logged in user (for updating)
     const [isEditing, setIsEditing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -281,22 +284,10 @@ export default function ProfileView({ profileUser, isOwner }: ProfileViewProps) 
                 </div>
 
                 {/* Heatmap */}
-                <div style={{ background: "#171717", borderRadius: "12px", padding: "1.5rem", border: "1px solid #262626" }}>
-                    <div style={{ fontSize: "1rem", fontWeight: 600, marginBottom: "1rem" }}>842 submissions in the past one year</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                        {Array.from({ length: 364 }).map((_, i) => {
-                            const val = (i * 1337 + 42) % 100;
-                            const isGreen = val > 70;
-                            const opacity = ((val % 80) + 20) / 100;
-                            return (
-                                <div key={i} style={{
-                                    width: "12px", height: "12px", borderRadius: "2px",
-                                    background: isGreen ? `rgba(34, 197, 94, ${opacity})` : '#262626'
-                                }}></div>
-                            )
-                        })}
-                    </div>
-                </div>
+                <ContributionGraph
+                    submissions={submissions}
+                    totalSubmissions={submissions.length}
+                />
             </div>
         </div>
     );

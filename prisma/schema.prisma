@@ -12,7 +12,20 @@ model User {
   username  String   @unique
   email     String   @unique
   fullName  String?
-  clerkId   String?  @unique // To map to Clerk users if needed
+  clerkId   String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  submissions Submission[]
+}
+
+model Submission {
+  id        String   @id @default(cuid())
+  userId    String
+  problemId String   // We assume problem IDs are strings for now
+  status    String   // "ACCEPTED", "WRONG_ANSWER", etc.
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
 }
