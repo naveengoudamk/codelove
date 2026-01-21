@@ -2,9 +2,39 @@
 
 import Link from "next/link";
 import styles from "../login/page.module.css"; // Reuse login styles
-import { Mail, Phone, User } from "lucide-react";
+import registerStyles from "./register.module.css";
+import { Mail, User, AtSign, Check, X, Loader2 } from "lucide-react";
+import { useState, useEffect, useActionState } from "react";
+import { checkUsernameAvailability, registerUser } from "@/actions/user";
+
+const initialState = {
+    message: '',
+    success: false,
+};
 
 export default function RegisterPage() {
+    const [state, formAction, isPending] = useActionState(registerUser, initialState);
+
+    const [username, setUsername] = useState("");
+    const [isChecking, setIsChecking] = useState(false);
+    const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        const checkUsername = async () => {
+            if (username.length > 2) {
+                setIsChecking(true);
+                const available = await checkUsernameAvailability(username);
+                setIsUsernameAvailable(available);
+                setIsChecking(false);
+            } else {
+                setIsUsernameAvailable(null);
+            }
+        };
+
+        const timer = setTimeout(checkUsername, 500);
+        return () => clearTimeout(timer);
+    }, [username]);
+
     return (
         <div className={styles.container}>
             <div className={styles.card}>
@@ -14,7 +44,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div className={styles.authButtons}>
-                    <button className={styles.socialBtn}>
+                    <button className={styles.socialBtn} type="button">
                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -24,7 +54,7 @@ export default function RegisterPage() {
                         Sign up with Google
                     </button>
 
-                    <button className={`${styles.socialBtn} ${styles.linkedinBtn}`}>
+                    <button className={`${styles.socialBtn} ${styles.linkedinBtn} `} type="button">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                         </svg>
@@ -34,33 +64,69 @@ export default function RegisterPage() {
 
                 <div className={styles.divider}>or</div>
 
-                <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+                <form className={styles.form} action={formAction}>
                     <div className={styles.inputGroup}>
                         <label className={styles.label}>Full Name</label>
                         <div className={styles.inputWrapper}>
                             <User size={18} />
                             <input
+                                name="fullName"
                                 type="text"
                                 placeholder="John Doe"
                                 className={styles.input}
+                                required
                             />
                         </div>
                     </div>
 
                     <div className={styles.inputGroup} style={{ marginTop: '1rem' }}>
-                        <label className={styles.label}>Email or Phone</label>
+                        <label className={styles.label}>Username</label>
+                        <div className={styles.inputWrapper}>
+                            <AtSign size={18} />
+                            <input
+                                name="username"
+                                type="text"
+                                placeholder="johndoe"
+                                className={styles.input}
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                                minLength={3}
+                            />
+                            {isChecking && <Loader2 size={16} className={`${registerStyles.statusIcon} ${registerStyles.spin} `} />}
+                            {!isChecking && isUsernameAvailable === true && <Check size={16} className={`${registerStyles.statusIcon} ${registerStyles.success} `} />}
+                            {!isChecking && isUsernameAvailable === false && <X size={16} className={`${registerStyles.statusIcon} ${registerStyles.error} `} />}
+                        </div>
+                        {!isChecking && isUsernameAvailable === false && (
+                            <p className={registerStyles.errorMessage}>Username is already taken</p>
+                        )}
+                    </div>
+
+                    <div className={styles.inputGroup} style={{ marginTop: '1rem' }}>
+                        <label className={styles.label}>Email</label>
                         <div className={styles.inputWrapper}>
                             <Mail size={18} />
                             <input
-                                type="text"
+                                name="email"
+                                type="email"
                                 placeholder="name@example.com"
                                 className={styles.input}
+                                required
                             />
                         </div>
                     </div>
 
-                    <button className={styles.continueBtn}>
-                        Create Account
+                    {state.message && (
+                        <p className={`${registerStyles.message} ${state.success ? registerStyles.messageSuccess : registerStyles.messageError} `}>
+                            {state.message}
+                        </p>
+                    )}
+
+                    <button
+                        className={styles.continueBtn}
+                        disabled={isPending || isUsernameAvailable === false}
+                    >
+                        {isPending ? <Loader2 className={registerStyles.spin} size={20} /> : 'Create Account'}
                     </button>
                 </form>
 
@@ -71,3 +137,4 @@ export default function RegisterPage() {
         </div>
     );
 }
+

@@ -1,0 +1,48 @@
+.statusIcon {
+    position: absolute;
+    right: 1rem;
+    left: auto !important;
+    pointer-events: none;
+}
+
+.success {
+    color: var(--success);
+}
+
+.error {
+    color: var(--error);
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.errorMessage {
+    font-size: 0.75rem;
+    color: var(--error);
+    margin-top: 0.25rem;
+}
+
+.message {
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.messageSuccess {
+    color: var(--success);
+}
+
+.messageError {
+    color: var(--error);
+}
