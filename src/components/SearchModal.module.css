@@ -1,0 +1,193 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 15vh;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+    width: 600px;
+    max-width: 90vw;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.searchHeader {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+}
+
+.searchInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    font-size: 1.1rem;
+    color: var(--foreground);
+    outline: none;
+    font-family: inherit;
+}
+
+.searchInput::placeholder {
+    color: #737373;
+}
+
+.filters {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.filter {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #a3a3a3;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.filter:hover {
+    background: var(--surface-hover);
+    color: var(--foreground);
+}
+
+.activeFilter {
+    background: var(--primary);
+    color: white;
+}
+
+.activeFilter:hover {
+    background: var(--primary-hover);
+}
+
+.results {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.emptyState {
+    padding: 3rem;
+    text-align: center;
+    color: #737373;
+}
+
+.group {
+    margin-bottom: 0.5rem;
+}
+
+.groupTitle {
+    padding: 0.75rem 1rem 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #737373;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.resultItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    margin: 0 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.resultItem:hover {
+    background: var(--surface-hover);
+}
+
+.resultIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #a3a3a3;
+}
+
+.resultContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.resultTitle {
+    font-size: 0.95rem;
+    color: var(--foreground);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resultSubtitle {
+    font-size: 0.8rem;
+    color: #737373;
+    margin-top: 0.1rem;
+}
+
+.closeHint {
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.75rem;
+    color: #737373;
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.shortcut {
+    background: #333;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.4rem;
+    color: #d4d4d4;
+    font-family: var(--font-mono);
+}

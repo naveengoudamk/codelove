@@ -46,6 +46,36 @@
     gap: 1rem;
 }
 
+.searchTrigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius);
+    color: #a3a3a3;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: 0.5rem;
+}
+
+.searchTrigger:hover {
+    background: var(--surface-hover);
+    color: var(--foreground);
+    border-color: #525252;
+}
+
+.searchShortcut {
+    font-size: 0.75rem;
+    background: #333;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    color: #d4d4d4;
+}
+
 .signInBtn {
     color: var(--foreground);
     font-weight: 600;
