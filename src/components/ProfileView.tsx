@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { MapPin, Link as LinkIcon, Github, Edit2, X, Save, Camera } from "lucide-react";
+import { MapPin, Link as LinkIcon, Github, Edit2, X, Save, Camera, Linkedin, Twitter, Instagram, Code2 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 // Type definition for the profile user
@@ -49,7 +49,11 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
         skills: (initialMetadata.skills as string[]) || ["Java", "MySQL", "Dynamic Programming"],
         location: (initialMetadata.location as string) || "India",
         github: (initialMetadata.github as string) || profileUser.username || "",
-        website: (initialMetadata.website as string) || ""
+        website: (initialMetadata.website as string) || "",
+        linkedin: (initialMetadata.linkedin as string) || "",
+        leetcode: (initialMetadata.leetcode as string) || "",
+        twitter: (initialMetadata.twitter as string) || "",
+        instagram: (initialMetadata.instagram as string) || ""
     });
 
     // Handle Save (Using unsafeMetadata for client-side simplicity, or server action ideally)
@@ -65,7 +69,11 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
                     skills: editForm.skills,
                     location: editForm.location,
                     github: editForm.github,
-                    website: editForm.website
+                    website: editForm.website,
+                    linkedin: editForm.linkedin,
+                    leetcode: editForm.leetcode,
+                    twitter: editForm.twitter,
+                    instagram: editForm.instagram
                 }
             });
             setIsEditing(false);
@@ -95,6 +103,10 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
     const location = getMetaString("location", editForm.location);
     const github = getMetaString("github", editForm.github);
     const website = getMetaString("website", editForm.website);
+    const linkedin = getMetaString("linkedin", editForm.linkedin);
+    const leetcode = getMetaString("leetcode", editForm.leetcode);
+    const twitter = getMetaString("twitter", editForm.twitter);
+    const instagram = getMetaString("instagram", editForm.instagram);
 
     return (
         <div style={{
@@ -207,6 +219,46 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
                                 />
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>LinkedIn Username</label>
+                                <input
+                                    value={editForm.linkedin}
+                                    onChange={(e) => setEditForm({ ...editForm, linkedin: e.target.value })}
+                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
+                                />
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>LeetCode Username</label>
+                                <input
+                                    value={editForm.leetcode}
+                                    onChange={(e) => setEditForm({ ...editForm, leetcode: e.target.value })}
+                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
+                                />
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Twitter Username</label>
+                                <input
+                                    value={editForm.twitter}
+                                    onChange={(e) => setEditForm({ ...editForm, twitter: e.target.value })}
+                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
+                                />
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Instagram Username</label>
+                                <input
+                                    value={editForm.instagram}
+                                    onChange={(e) => setEditForm({ ...editForm, instagram: e.target.value })}
+                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
+                                />
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Website URL</label>
+                                <input
+                                    value={editForm.website}
+                                    onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
+                                />
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                                 <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Skills (comma joined)</label>
                                 <input
                                     value={Array.isArray(editForm.skills) ? editForm.skills.join(", ") : editForm.skills}
@@ -220,15 +272,41 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
                         </div>
                     ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4" }}>
-                                <MapPin size={16} color="#737373" /> {location}
-                            </div>
-                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4" }}>
-                                <Github size={16} color="#737373" /> {github}
-                            </div>
-                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4" }}>
-                                <LinkIcon size={16} color="#737373" /> {website || "No website"}
-                            </div>
+                            {location && (
+                                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4" }}>
+                                    <MapPin size={16} color="#737373" /> {location}
+                                </div>
+                            )}
+                            {github && (
+                                <a href={`https://github.com/${github}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Github size={16} color="#737373" /> {github}
+                                </a>
+                            )}
+                            {linkedin && (
+                                <a href={`https://linkedin.com/in/${linkedin}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Linkedin size={16} color="#0077b5" /> {linkedin}
+                                </a>
+                            )}
+                            {leetcode && (
+                                <a href={`https://leetcode.com/${leetcode}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Code2 size={16} color="#ffa116" /> {leetcode}
+                                </a>
+                            )}
+                            {twitter && (
+                                <a href={`https://twitter.com/${twitter}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Twitter size={16} color="#1da1f2" /> {twitter}
+                                </a>
+                            )}
+                            {instagram && (
+                                <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Instagram size={16} color="#e1306c" /> {instagram}
+                                </a>
+                            )}
+                            {website && (
+                                <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <LinkIcon size={16} color="#737373" /> {website}
+                                </a>
+                            )}
                         </div>
                     )}
                 </div>
