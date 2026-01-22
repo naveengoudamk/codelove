@@ -1,14 +1,33 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function checkUsernameAvailability(username: string) {
     if (!username) return false
 
-    const existingUser = await db.user.findUnique({
-        where: { username },
-    })
-    return !existingUser // Returns true if available (not found)
+    try {
+        // Check Local DB
+        const existingUser = await db.user.findUnique({
+            where: { username },
+        })
+
+        if (existingUser) return false
+
+        // Check Clerk
+        const client = await clerkClient();
+        const clerkUsers = await client.users.getUserList({
+            username: [username],
+            limit: 1
+        });
+
+        if (clerkUsers.data.length > 0) return false;
+
+        return true // Returns true if available (not found)
+    } catch (error) {
+        console.error("Error checking username availability:", error);
+        return false; // Fail safe
+    }
 }
 
 export async function registerUser(prevState: any, formData: FormData) {
@@ -21,6 +40,7 @@ export async function registerUser(prevState: any, formData: FormData) {
     }
 
     try {
+        // Check Local DB
         const existingUser = await db.user.findFirst({
             where: {
                 OR: [
@@ -38,6 +58,22 @@ export async function registerUser(prevState: any, formData: FormData) {
                 return { message: 'Email already registered', success: false }
             }
         }
+
+        // Check Clerk for Username
+        const client = await clerkClient();
+        const clerkUsers = await client.users.getUserList({
+            username: [username],
+            limit: 1
+        });
+
+        if (clerkUsers.data.length > 0) {
+            return { message: 'Username already taken (Clerk)', success: false }
+        }
+
+        // NOTE: This only creates the user in the local database.
+        // For full authentication, the user must also be created in Clerk.
+        // Ideally, this form should collect a password and create the Clerk user via API,
+        // or use the Clerk SignUp component.
 
         await db.user.create({
             data: {
