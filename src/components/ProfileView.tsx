@@ -278,33 +278,33 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
                                 </div>
                             )}
                             {github && (
-                                <a href={`https://github.com/${github}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Github size={16} color="#737373" /> {github}
+                                <a href={github.startsWith('http') ? github : `https://github.com/${github}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Github size={16} color="#737373" /> {github.replace(/^https?:\/\/(www\.)?github\.com\//, '')}
                                 </a>
                             )}
                             {linkedin && (
-                                <a href={`https://linkedin.com/in/${linkedin}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Linkedin size={16} color="#0077b5" /> {linkedin}
+                                <a href={linkedin.startsWith('http') ? linkedin : `https://linkedin.com/in/${linkedin}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Linkedin size={16} color="#0077b5" /> {linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/(in\/)?/, '')}
                                 </a>
                             )}
                             {leetcode && (
-                                <a href={`https://leetcode.com/${leetcode}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Code2 size={16} color="#ffa116" /> {leetcode}
+                                <a href={leetcode.startsWith('http') ? leetcode : `https://leetcode.com/${leetcode}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Code2 size={16} color="#ffa116" /> {leetcode.replace(/^https?:\/\/(www\.)?leetcode\.com\//, '')}
                                 </a>
                             )}
                             {twitter && (
-                                <a href={`https://twitter.com/${twitter}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Twitter size={16} color="#1da1f2" /> {twitter}
+                                <a href={twitter.startsWith('http') ? twitter : `https://twitter.com/${twitter}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Twitter size={16} color="#1da1f2" /> {twitter.replace(/^https?:\/\/(www\.)?(twitter\.com|x\.com)\//, '')}
                                 </a>
                             )}
                             {instagram && (
-                                <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Instagram size={16} color="#e1306c" /> {instagram}
+                                <a href={instagram.startsWith('http') ? instagram : `https://instagram.com/${instagram}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
+                                    <Instagram size={16} color="#e1306c" /> {instagram.replace(/^https?:\/\/(www\.)?instagram\.com\//, '')}
                                 </a>
                             )}
                             {website && (
                                 <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <LinkIcon size={16} color="#737373" /> {website}
+                                    <LinkIcon size={16} color="#737373" /> {website.replace(/^https?:\/\//, '')}
                                 </a>
                             )}
                         </div>
