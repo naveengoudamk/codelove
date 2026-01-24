@@ -35,10 +35,27 @@
     font-size: 0.95rem;
     font-weight: 500;
     transition: color 0.2s;
+    position: relative;
+    padding: 0.5rem 0;
 }
 
 .navLink:hover {
     color: var(--foreground);
+}
+
+.navLink[data-active="true"] {
+    color: var(--foreground);
+}
+
+.activeIndicator {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--primary);
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--primary);
 }
 
 .authButtons {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import { CheckCircle2, Lock, Clock, Building, Briefcase, PlayCircle } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 // Mock Data for Interviews
 const interviews = [
@@ -114,9 +115,28 @@ export default function InterviewPage() {
                                 <th className={styles.th}>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <motion.tbody
+                            variants={{
+                                hidden: { opacity: 0 },
+                                show: {
+                                    opacity: 1,
+                                    transition: {
+                                        staggerChildren: 0.05
+                                    }
+                                }
+                            }}
+                            initial="hidden"
+                            animate="show"
+                        >
                             {filteredInterviews.map((interview) => (
-                                <tr key={interview.id} className={styles.row}>
+                                <motion.tr
+                                    key={interview.id}
+                                    className={styles.row}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 10 },
+                                        show: { opacity: 1, y: 0 }
+                                    }}
+                                >
                                     {/* Status */}
                                     <td className={styles.td}>
                                         {interview.status === "completed" ? (
@@ -177,9 +197,9 @@ export default function InterviewPage() {
                                             </button>
                                         )}
                                     </td>
-                                </tr>
+                                </motion.tr>
                             ))}
-                        </tbody>
+                        </motion.tbody>
                     </table>
                 </div>
             </div>

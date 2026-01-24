@@ -4,6 +4,7 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 import { CheckCircle2, Lock, FileText, Flame, Gift, Zap, Map, BookOpen, Trophy } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Mock Data for Quests
 const quests = [
@@ -104,9 +105,28 @@ export default function QuestsPage() {
                                 <th className={styles.th}>Difficulty</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <motion.tbody
+                            variants={{
+                                hidden: { opacity: 0 },
+                                show: {
+                                    opacity: 1,
+                                    transition: {
+                                        staggerChildren: 0.05
+                                    }
+                                }
+                            }}
+                            initial="hidden"
+                            animate="show"
+                        >
                             {quests.map((quest) => (
-                                <tr key={quest.id} className={styles.row}>
+                                <motion.tr
+                                    key={quest.id}
+                                    className={styles.row}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 10 },
+                                        show: { opacity: 1, y: 0 }
+                                    }}
+                                >
                                     {/* Status */}
                                     <td className={styles.td}>
                                         {quest.status === "completed" ? (
@@ -169,9 +189,9 @@ export default function QuestsPage() {
                                             {quest.difficulty}
                                         </span>
                                     </td>
-                                </tr>
+                                </motion.tr>
                             ))}
-                        </tbody>
+                        </motion.tbody>
                     </table>
                 </div>
             </div>

@@ -6,8 +6,11 @@ import { Code2, Search } from 'lucide-react';
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import SearchModal from './SearchModal';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 const Navbar = () => {
+    const pathname = usePathname();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     useEffect(() => {
@@ -30,11 +33,29 @@ const Navbar = () => {
                 </Link>
 
                 <div className={styles.navLinks}>
-                    <Link href="/problems" className={styles.navLink}>Problems</Link>
-                    <Link href="/quests" className={styles.navLink}>Quests</Link>
-                    <Link href="/contest" className={styles.navLink}>Contest</Link>
-                    <Link href="/discuss" className={styles.navLink}>Discuss</Link>
-                    <Link href="/interview" className={styles.navLink}>Interview</Link>
+                    {[
+                        { name: 'Problems', path: '/problems' },
+                        { name: 'Quests', path: '/quests' },
+                        { name: 'Contest', path: '/contest' },
+                        { name: 'Discuss', path: '/discuss' },
+                        { name: 'Interview', path: '/interview' },
+                    ].map((link) => (
+                        <Link
+                            key={link.path}
+                            href={link.path}
+                            className={styles.navLink}
+                            data-active={pathname === link.path || (link.path !== '/' && pathname.startsWith(link.path))}
+                        >
+                            {link.name}
+                            {(pathname === link.path || (link.path !== '/' && pathname.startsWith(link.path))) && (
+                                <motion.div
+                                    layoutId="navbar-indicator"
+                                    className={styles.activeIndicator}
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                        </Link>
+                    ))}
                 </div>
 
                 <div className={styles.authButtons} style={{ alignItems: 'center' }}>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import { CheckCircle2, Lock, FileText, Flame, Gift, Zap } from "lucide-react";
 import { useUser, SignInButton } from "@clerk/nextjs";
+import { motion } from "framer-motion";
 
 // Mock Data for Problems
 const problems = [
@@ -186,9 +187,28 @@ export default function ProblemsPage() {
                                 <th className={styles.th}>Frequency</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <motion.tbody
+                            variants={{
+                                hidden: { opacity: 0 },
+                                show: {
+                                    opacity: 1,
+                                    transition: {
+                                        staggerChildren: 0.05
+                                    }
+                                }
+                            }}
+                            initial="hidden"
+                            animate="show"
+                        >
                             {problems.map((problem) => (
-                                <tr key={problem.id} className={styles.row}>
+                                <motion.tr
+                                    key={problem.id}
+                                    className={styles.row}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 10 },
+                                        show: { opacity: 1, y: 0 }
+                                    }}
+                                >
                                     {/* Status */}
                                     <td className={styles.td}>
                                         {problem.status === "solved" ? (
@@ -239,9 +259,9 @@ export default function ProblemsPage() {
                                     <td className={styles.td}>
                                         <Lock size={16} color="var(--border)" />
                                     </td>
-                                </tr>
+                                </motion.tr>
                             ))}
-                        </tbody>
+                        </motion.tbody>
                     </table>
                 </div>
             </div>

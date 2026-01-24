@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import { Calendar, Clock, Trophy, Target, Zap, Gift } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function ContestPage() {
     const [isRegistered, setIsRegistered] = useState(false);
@@ -55,17 +56,41 @@ export default function ContestPage() {
 
     return (
         <main className={styles.container}>
-            <div className={styles.header}>
+            <motion.div
+                className={styles.header}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
                 <h1 className={styles.title}>Weekly Contests</h1>
                 <p className={styles.subtitle}>
                     Compete with the best developers from around the world.
                     Showcase your skills and climb the global leaderboard.
                 </p>
-            </div>
+            </motion.div>
 
-            <div className={styles.grid}>
+            <motion.div
+                className={styles.grid}
+                variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                        opacity: 1,
+                        transition: {
+                            staggerChildren: 0.1
+                        }
+                    }
+                }}
+                initial="hidden"
+                animate="show"
+            >
                 {/* Weekly Challenge Card */}
-                <div className={styles.card}>
+                <motion.div
+                    className={styles.card}
+                    variants={{
+                        hidden: { opacity: 0, y: 20 },
+                        show: { opacity: 1, y: 0 }
+                    }}
+                >
                     <div className={styles.cardHeader}>
                         <div>
                             <span className={styles.badge}>Weekly Challenge</span>
@@ -128,10 +153,17 @@ export default function ContestPage() {
                     >
                         {isRegistered ? 'Registered' : 'Register Now'}
                     </button>
-                </div>
+                </motion.div>
 
                 {/* Information Card */}
-                <div className={styles.card} style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}>
+                <motion.div
+                    className={styles.card}
+                    style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
+                    variants={{
+                        hidden: { opacity: 0, y: 20 },
+                        show: { opacity: 1, y: 0 }
+                    }}
+                >
                     <h3 className={styles.contestTitle} style={{ fontSize: '1.5rem' }}>About Weekly Contests</h3>
                     <p style={{ color: '#d4d4d4', lineHeight: 1.6, marginBottom: '1.5rem', fontSize: '0.95rem' }}>
                         Every week, CodeLove hosts a global competition for developers of all levels.
@@ -156,8 +188,8 @@ export default function ContestPage() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
         </main>
     );
 }
