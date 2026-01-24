@@ -31,6 +31,7 @@ const Navbar = () => {
 
                 <div className={styles.navLinks}>
                     <Link href="/problems" className={styles.navLink}>Problems</Link>
+                    <Link href="/quests" className={styles.navLink}>Quests</Link>
                     <Link href="/contest" className={styles.navLink}>Contest</Link>
                     <Link href="/discuss" className={styles.navLink}>Discuss</Link>
                     <Link href="/interview" className={styles.navLink}>Interview</Link>
