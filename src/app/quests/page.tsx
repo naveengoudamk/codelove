@@ -206,7 +206,9 @@ export default function QuestsPage() {
                         <p style={{ fontSize: '0.9rem', color: '#a1a1aa', marginBottom: '1rem' }}>
                             Win exclusive badges and prizes!
                         </p>
-                        <button className={styles.solveBtn}>Join Now</button>
+                        <Link href="/quests/30-days-of-javascript" style={{ width: '100%' }}>
+                            <button className={styles.solveBtn}>Join Now</button>
+                        </Link>
                     </div>
                 </div>
 
