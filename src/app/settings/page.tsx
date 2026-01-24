@@ -32,29 +32,30 @@ export default function SettingsPage() {
                 style={{ width: "100%", display: "flex", justifyContent: "center" }}
             >
                 <UserProfile
+                    path="/settings"
+                    routing="path"
                     appearance={{
                         baseTheme: dark,
+                        variables: {
+                            colorPrimary: "#8b5cf6",
+                            colorBackground: "#171717",
+                            colorText: "#ededed",
+                            colorInputText: "#ededed"
+                        },
                         elements: {
                             card: {
                                 boxShadow: "none",
-                                background: "#171717",
-                                border: "1px solid #262626"
+                                border: "1px solid #262626",
+                                width: "100%"
                             },
                             navbar: {
                                 borderRight: "1px solid #262626"
                             },
-                            navbarButton: {
-                                color: "#a1a1aa"
-                            },
-                            headerTitle: {
-                                color: "#ededed"
-                            },
-                            headerSubtitle: {
-                                color: "#a1a1aa"
+                            scrollBox: {
+                                borderRadius: "0 12px 12px 0"
                             }
                         }
                     }}
-                    routing="hash"
                 />
             </motion.div>
         </div>
