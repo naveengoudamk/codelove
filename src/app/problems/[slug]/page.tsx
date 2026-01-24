@@ -116,6 +116,15 @@ public:
             cpp: "class Solution {\npublic:\n    ListNode* reverseList(ListNode* head) {\n        \n    }\n};"
         }
     },
+    "create-hello-world-function": {
+        title: "2667. Create Hello World Function",
+        difficulty: "Easy",
+        description: "Write a function `createHelloWorld`. It should return a new function that always returns \"Hello World\".",
+        defaultCode: {
+            javascript: "/**\n * @return {Function}\n */\nvar createHelloWorld = function() {\n    return function(...args) {\n        return \"Hello World\";\n    }\n};",
+            typescript: "function createHelloWorld() {\n\treturn function(...args): string {\n\t\treturn \"Hello World\";\n\t};\n};"
+        }
+    },
     // Add a default for others for demo purposes, usually we'd fetch or error
     "default": {
         title: "Demo Problem",
