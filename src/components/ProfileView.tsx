@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { MapPin, Link as LinkIcon, Github, Edit2, X, Save, Camera, Linkedin, Twitter, Instagram, Code2 } from "lucide-react";
+import Link from 'next/link';
+import { MapPin, Link as LinkIcon, Github, Edit2, X, Save, Camera, Linkedin, Twitter, Instagram, Code2, Settings } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 // Type definition for the profile user
@@ -178,26 +179,46 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
                     </div>
 
                     {isOwner && (
-                        <button
-                            onClick={() => setIsEditing(!isEditing)}
-                            style={{
-                                width: "100%",
-                                padding: "0.6rem",
-                                borderRadius: "8px",
-                                border: "none",
-                                background: isEditing ? "#262626" : "var(--primary)",
-                                color: isEditing ? "#fff" : "#fff",
-                                cursor: "pointer",
-                                fontWeight: 500,
-                                fontSize: "0.9rem",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: "0.5rem"
-                            }}
-                        >
-                            {isEditing ? <><X size={16} /> Cancel</> : <><Edit2 size={16} /> Edit Profile</>}
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                                onClick={() => setIsEditing(!isEditing)}
+                                style={{
+                                    flex: 1,
+                                    padding: "0.6rem",
+                                    borderRadius: "8px",
+                                    border: "none",
+                                    background: isEditing ? "#262626" : "var(--primary)",
+                                    color: isEditing ? "#fff" : "#fff",
+                                    cursor: "pointer",
+                                    fontWeight: 500,
+                                    fontSize: "0.9rem",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "0.5rem"
+                                }}
+                            >
+                                {isEditing ? <><X size={16} /> Cancel</> : <><Edit2 size={16} /> Edit Profile</>}
+                            </button>
+                            <Link href="/settings" style={{ textDecoration: 'none' }}>
+                                <button
+                                    style={{
+                                        padding: "0.6rem",
+                                        borderRadius: "8px",
+                                        border: "1px solid #262626",
+                                        background: "transparent",
+                                        color: "#a3a3a3",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center"
+                                    }}
+                                    title="Account Settings"
+                                >
+                                    <Settings size={20} />
+                                </button>
+                            </Link>
+                        </div>
                     )}
 
                     {isEditing ? (
