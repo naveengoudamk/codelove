@@ -1,10 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from 'next/link';
-import { MapPin, Link as LinkIcon, Github, Edit2, X, Save, Camera, Linkedin, Twitter, Instagram, Code2, Settings } from "lucide-react";
+import { MapPin, Link as LinkIcon, Github, Edit2, X, Save, Camera, Linkedin, Twitter, Instagram, Code2, Settings, Trophy, Flame, Target } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
+import ContributionGraph from "./ContributionGraph";
+import styles from "./ProfileView.module.css";
 
 // Type definition for the profile user
 interface ProfileUser {
@@ -12,10 +15,8 @@ interface ProfileUser {
     username?: string | null;
     fullName?: string | null;
     imageUrl: string;
-    publicMetadata?: Record<string, unknown>; // For custom fields like skills, social links
+    publicMetadata?: Record<string, unknown>;
 }
-
-import ContributionGraph from "./ContributionGraph";
 
 interface ProfileViewProps {
     profileUser: ProfileUser;
@@ -23,32 +24,88 @@ interface ProfileViewProps {
     submissions?: any[];
 }
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.5,
+            ease: [0.33, 1, 0.68, 1] as any // Cubic-bezier for smooth finish
+        }
+    }
+};
+
+const CircularProgress = ({ val, total, color }: { val: number; total: number; color: string }) => {
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius;
+    const progress = (val / total);
+    const offset = circumference - progress * circumference;
+
+    return (
+        <div className={styles.progressCircleWrapper}>
+            <svg className={styles.progressCircleSvg} width="120" height="120" viewBox="0 0 120 120">
+                <circle className={styles.progressCircleBg} cx="60" cy="60" r={radius} />
+                <motion.circle
+                    className={styles.progressCircleValue}
+                    cx="60"
+                    cy="60"
+                    r={radius}
+                    initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset: offset }}
+                    transition={{ duration: 1.5, ease: "easeInOut" }}
+                    style={{ strokeDasharray: circumference, stroke: color }}
+                />
+            </svg>
+            <div className={styles.progressCircleText}>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={styles.solvedCount}
+                >
+                    {val}
+                </motion.div>
+                <div className={styles.solvedLabel}>Solved</div>
+            </div>
+        </div>
+    );
+};
+
 export default function ProfileView({ profileUser, isOwner, submissions = [] }: ProfileViewProps) {
-    const { user } = useUser(); // Current logged in user (for updating)
+    const { user } = useUser();
     const [isEditing, setIsEditing] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Handle Image Upload
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !user) return;
-
         try {
             await user.setProfileImage({ file });
         } catch (err) {
             console.error("Error updating profile image:", err);
-            alert("Failed to update profile image");
         }
     };
 
-    // Local state for editing form
-    // Safe access to metadata with unknown type
-    // Safe access to metadata with unknown type
     const initialMetadata = (profileUser.publicMetadata || {}) as Record<string, unknown>;
 
     const [editForm, setEditForm] = useState({
-        skills: (initialMetadata.skills as string[]) || ["Java", "MySQL", "Dynamic Programming"],
-        location: (initialMetadata.location as string) || "India",
+        skills: (initialMetadata.skills as string[]) || ["React", "TypeScript", "Node.js", "Next.js"],
+        location: (initialMetadata.location as string) || "Global",
         github: (initialMetadata.github as string) || profileUser.username || "",
         website: (initialMetadata.website as string) || "",
         linkedin: (initialMetadata.linkedin as string) || "",
@@ -57,89 +114,56 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
         instagram: (initialMetadata.instagram as string) || ""
     });
 
-    // Handle Save (Using unsafeMetadata for client-side simplicity, or server action ideally)
     const handleSave = async () => {
         if (!isOwner || !user) return;
-
         try {
-            // We use unsafeMetadata because publicMetadata is read-only on client
-            // In a real app, use a server action to update publicMetadata properly
             await user.update({
                 unsafeMetadata: {
                     ...user.unsafeMetadata,
-                    skills: editForm.skills,
-                    location: editForm.location,
-                    github: editForm.github,
-                    website: editForm.website,
-                    linkedin: editForm.linkedin,
-                    leetcode: editForm.leetcode,
-                    twitter: editForm.twitter,
-                    instagram: editForm.instagram
+                    ...editForm
                 }
             });
             setIsEditing(false);
-            // In a real app you might need to refresh/invalidate router to see changes 
-            // but Clerk useUser triggers re-render automatically on metadata change.
         } catch (err) {
             console.error("Failed to update profile", err);
-            alert("Failed to update profile changes");
         }
     };
 
-    // Use display data from props, fallback to form state if just edited (optimistic-ish)
-    // Actually Clerk updates might take a second, so relying on props (which come from useUser or server) is safer
-    // But for "ProfileView" component that receives data, we trust the props unless we are the owner and have local overrides?
-    // Let's stick to using the props for display, but for the "Owner" viewing their own profile, 
-    // the props passed in SHOULD be the live clerk user object which updates reactively.
-
-    // Helper to get metadata (handling both public and unsafe for compatibility)
-    // We prioritize the component props, which usually come from fresh fetching
     const meta = (profileUser.publicMetadata || {}) as Record<string, unknown>;
-
-    // Type casting helper
     const getMetaString = (key: string, backup: string) => (meta[key] as string) || backup;
     const getMetaArray = (key: string, backup: string[]) => (meta[key] as string[]) || backup;
 
-    const skills = getMetaArray("skills", editForm.skills as unknown as string[]);
+    const skills = getMetaArray("skills", editForm.skills);
     const location = getMetaString("location", editForm.location);
     const github = getMetaString("github", editForm.github);
     const website = getMetaString("website", editForm.website);
     const linkedin = getMetaString("linkedin", editForm.linkedin);
     const leetcode = getMetaString("leetcode", editForm.leetcode);
-    const twitter = getMetaString("twitter", editForm.twitter);
-    const instagram = getMetaString("instagram", editForm.instagram);
+
+    if (!mounted) return null;
 
     return (
-        <div style={{
-            display: "flex",
-            flexDirection: "row",
-            gap: "1.5rem",
-            maxWidth: "1200px",
-            margin: "0 auto",
-            padding: "2rem"
-        }}>
+        <motion.div
+            className={styles.profileContainer}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
             {/* Left Sidebar */}
-            <div style={{ flex: "0 0 300px", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                <div style={{
-                    background: "#171717",
-                    borderRadius: "12px",
-                    padding: "1.5rem",
-                    border: "1px solid #262626",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1rem"
-                }}>
-                    <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+            <motion.div className={styles.leftSidebar} variants={itemVariants}>
+                <div className={styles.card}>
+                    <div className={styles.profileHeader}>
                         <div
-                            style={{ position: "relative", cursor: isEditing ? "pointer" : "default" }}
+                            className={styles.avatarContainer}
                             onClick={() => isEditing && fileInputRef.current?.click()}
+                            style={{ cursor: isEditing ? "pointer" : "default" }}
                         >
                             <Image
                                 src={profileUser.imageUrl || "/file.svg"}
                                 alt="Avatar"
                                 width={80}
                                 height={80}
-                                style={{ borderRadius: "12px", background: "#333", objectFit: "cover" }}
+                                className={styles.avatar}
                             />
                             {isEditing && (
                                 <div style={{
@@ -149,7 +173,7 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
                                     width: "100%",
                                     height: "100%",
                                     background: "rgba(0,0,0,0.5)",
-                                    borderRadius: "12px",
+                                    borderRadius: "16px",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center"
@@ -166,228 +190,185 @@ export default function ProfileView({ profileUser, isOwner, submissions = [] }: 
                             />
                         </div>
                         <div style={{ overflow: "hidden" }}>
-                            <h2 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            <h2 className={styles.username}>
                                 {profileUser.fullName || profileUser.username || "User"}
                             </h2>
-                            <p style={{ color: "#a3a3a3", fontSize: "0.9rem", margin: 0 }}>@{profileUser.username || "user"}</p>
+                            <p className={styles.handle}>@{profileUser.username || "user"}</p>
                         </div>
                     </div>
 
-                    <div style={{ fontSize: "0.9rem", color: "#a3a3a3", display: "flex", justifyContent: "space-between" }}>
-                        <span>Rank</span>
-                        <span style={{ color: "#fff", fontWeight: 600 }}>375,155</span>
+                    <div className={styles.statsRow}>
+                        <span>Global Rank</span>
+                        <span className={styles.rankValue}>#1,240</span>
                     </div>
 
                     {isOwner && (
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.25rem' }}>
                             <button
                                 onClick={() => setIsEditing(!isEditing)}
-                                style={{
-                                    flex: 1,
-                                    padding: "0.6rem",
-                                    borderRadius: "8px",
-                                    border: "none",
-                                    background: isEditing ? "#262626" : "var(--primary)",
-                                    color: isEditing ? "#fff" : "#fff",
-                                    cursor: "pointer",
-                                    fontWeight: 500,
-                                    fontSize: "0.9rem",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: "0.5rem"
-                                }}
+                                className={styles.editButton}
+                                style={{ background: isEditing ? "rgba(255,255,255,0.1)" : "var(--primary)" }}
                             >
-                                {isEditing ? <><X size={16} /> Cancel</> : <><Edit2 size={16} /> Edit Profile</>}
+                                {isEditing ? <><X size={16} /> Close</> : <><Edit2 size={16} /> Edit Profile</>}
                             </button>
-                            <Link href="/settings" style={{ textDecoration: 'none' }}>
-                                <button
-                                    style={{
-                                        padding: "0.6rem",
-                                        borderRadius: "8px",
-                                        border: "1px solid #262626",
-                                        background: "transparent",
-                                        color: "#a3a3a3",
-                                        cursor: "pointer",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center"
-                                    }}
-                                    title="Account Settings"
-                                >
-                                    <Settings size={20} />
-                                </button>
+                            <Link href="/settings" className={styles.settingsButton} title="Account Settings">
+                                <Settings size={20} />
                             </Link>
                         </div>
                     )}
 
-                    {isEditing ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", marginTop: "0.5rem" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Location</label>
-                                <input
-                                    value={editForm.location}
-                                    onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
-                                />
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Github Username</label>
-                                <input
-                                    value={editForm.github}
-                                    onChange={(e) => setEditForm({ ...editForm, github: e.target.value })}
-                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
-                                />
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>LinkedIn Username</label>
-                                <input
-                                    value={editForm.linkedin}
-                                    onChange={(e) => setEditForm({ ...editForm, linkedin: e.target.value })}
-                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
-                                />
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>LeetCode Username</label>
-                                <input
-                                    value={editForm.leetcode}
-                                    onChange={(e) => setEditForm({ ...editForm, leetcode: e.target.value })}
-                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
-                                />
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Twitter Username</label>
-                                <input
-                                    value={editForm.twitter}
-                                    onChange={(e) => setEditForm({ ...editForm, twitter: e.target.value })}
-                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
-                                />
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Instagram Username</label>
-                                <input
-                                    value={editForm.instagram}
-                                    onChange={(e) => setEditForm({ ...editForm, instagram: e.target.value })}
-                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
-                                />
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Website URL</label>
-                                <input
-                                    value={editForm.website}
-                                    onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
-                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
-                                />
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.8rem", color: "#a3a3a3" }}>Skills (comma joined)</label>
-                                <input
-                                    value={Array.isArray(editForm.skills) ? editForm.skills.join(", ") : editForm.skills}
-                                    onChange={(e) => setEditForm({ ...editForm, skills: e.target.value.split(",").map(s => s.trim()) })}
-                                    style={{ background: "#262626", border: "1px solid #404040", padding: "0.4rem", borderRadius: "6px", color: "white", fontSize: "0.8rem" }}
-                                />
-                            </div>
-                            <button onClick={handleSave} style={{ background: "var(--success)", border: "none", borderRadius: "6px", padding: "0.5rem", color: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", marginTop: "0.5rem" }}>
-                                <Save size={16} /> Save Changes
-                            </button>
-                        </div>
-                    ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-                            {location && (
-                                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4" }}>
-                                    <MapPin size={16} color="#737373" /> {location}
+                    <AnimatePresence mode="wait">
+                        {isEditing ? (
+                            <motion.div
+                                key="edit"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                style={{ display: "flex", flexDirection: "column", gap: "0.8rem", marginTop: "1.25rem", overflow: 'hidden' }}
+                            >
+                                {[
+                                    { label: "Location", key: "location" },
+                                    { label: "Github", key: "github" },
+                                    { label: "LinkedIn", key: "linkedin" },
+                                    { label: "LeetCode", key: "leetcode" },
+                                    { label: "Twitter", key: "twitter" },
+                                    { label: "Instagram", key: "instagram" },
+                                    { label: "Website", key: "website" }
+                                ].map(field => (
+                                    <div key={field.key} style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                        <label style={{ fontSize: "0.75rem", color: "#737373", textTransform: 'uppercase', fontWeight: 600 }}>{field.label}</label>
+                                        <input
+                                            value={(editForm as any)[field.key]}
+                                            onChange={(e) => setEditForm({ ...editForm, [field.key]: e.target.value })}
+                                            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", padding: "0.6rem", borderRadius: "8px", color: "white", fontSize: "0.85rem" }}
+                                        />
+                                    </div>
+                                ))}
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                    <label style={{ fontSize: "0.75rem", color: "#737373", textTransform: 'uppercase', fontWeight: 600 }}>Skills (comma separated)</label>
+                                    <input
+                                        value={Array.isArray(editForm.skills) ? editForm.skills.join(", ") : editForm.skills}
+                                        onChange={(e) => setEditForm({ ...editForm, skills: e.target.value.split(",").map(s => s.trim()) })}
+                                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", padding: "0.6rem", borderRadius: "8px", color: "white", fontSize: "0.85rem" }}
+                                    />
                                 </div>
-                            )}
-                            {github && (
-                                <a href={github.startsWith('http') ? github : `https://github.com/${github}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Github size={16} color="#737373" /> {github.replace(/^https?:\/\/(www\.)?github\.com\//, '')}
-                                </a>
-                            )}
-                            {linkedin && (
-                                <a href={linkedin.startsWith('http') ? linkedin : `https://linkedin.com/in/${linkedin}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Linkedin size={16} color="#0077b5" /> {linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/(in\/)?/, '')}
-                                </a>
-                            )}
-                            {leetcode && (
-                                <a href={leetcode.startsWith('http') ? leetcode : `https://leetcode.com/${leetcode}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Code2 size={16} color="#ffa116" /> {leetcode.replace(/^https?:\/\/(www\.)?leetcode\.com\//, '')}
-                                </a>
-                            )}
-                            {twitter && (
-                                <a href={twitter.startsWith('http') ? twitter : `https://twitter.com/${twitter}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Twitter size={16} color="#1da1f2" /> {twitter.replace(/^https?:\/\/(www\.)?(twitter\.com|x\.com)\//, '')}
-                                </a>
-                            )}
-                            {instagram && (
-                                <a href={instagram.startsWith('http') ? instagram : `https://instagram.com/${instagram}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <Instagram size={16} color="#e1306c" /> {instagram.replace(/^https?:\/\/(www\.)?instagram\.com\//, '')}
-                                </a>
-                            )}
-                            {website && (
-                                <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noreferrer" style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem", color: "#d4d4d4", textDecoration: "none" }} className="hover:text-white transition-colors">
-                                    <LinkIcon size={16} color="#737373" /> {website.replace(/^https?:\/\//, '')}
-                                </a>
-                            )}
-                        </div>
-                    )}
+                                <button onClick={handleSave} className={styles.editButton} style={{ background: "var(--success)", marginTop: "0.5rem" }}>
+                                    <Save size={16} /> Save Changes
+                                </button>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="view"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginTop: "1.25rem" }}
+                            >
+                                {location && (
+                                    <div className={styles.socialLink}><MapPin size={16} color="var(--primary)" /> {location}</div>
+                                )}
+                                {github && (
+                                    <a href={github.startsWith('http') ? github : `https://github.com/${github}`} target="_blank" rel="noreferrer" className={styles.socialLink}>
+                                        <Github size={16} color="#fff" /> {github.replace(/^https?:\/\/(www\.)?github\.com\//, '')}
+                                    </a>
+                                )}
+                                {leetcode && (
+                                    <a href={leetcode.startsWith('http') ? leetcode : `https://leetcode.com/${leetcode}`} target="_blank" rel="noreferrer" className={styles.socialLink}>
+                                        <Code2 size={16} color="#ffa116" /> {leetcode.replace(/^https?:\/\/(www\.)?leetcode\.com\//, '')}
+                                    </a>
+                                )}
+                                {website && (
+                                    <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noreferrer" className={styles.socialLink}>
+                                        <LinkIcon size={16} color="var(--secondary)" /> {website.replace(/^https?:\/\//, '')}
+                                    </a>
+                                )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
-                <div style={{ background: "#171717", borderRadius: "12px", padding: "1.5rem", border: "1px solid #262626" }}>
-                    <h3 style={{ fontSize: "1rem", marginBottom: "1rem", marginTop: 0 }}>Skills</h3>
+                <div className={styles.card}>
+                    <h3 style={{ fontSize: "0.9rem", color: '#737373', textTransform: 'uppercase', marginBottom: "1rem", marginTop: 0 }}>Community Skills</h3>
                     <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                        {skills && skills.length > 0 ? skills.map((skill: string, idx: number) => (
-                            <span key={idx} style={{ background: "#262626", padding: "2px 10px", borderRadius: "12px", fontSize: "0.8rem", color: "#d4d4d4", border: "1px solid #404040" }}>
+                        {skills.map((skill: string, idx: number) => (
+                            <motion.span
+                                key={idx}
+                                className={styles.skillBadge}
+                                whileHover={{ scale: 1.1, backgroundColor: "var(--primary)" }}
+                                whileTap={{ scale: 0.95 }}
+                            >
                                 {skill}
-                            </span>
-                        )) : (
-                            <span style={{ color: "#525252", fontSize: "0.8rem", fontStyle: "italic" }}>No skills listed</span>
-                        )}
+                            </motion.span>
+                        ))}
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Right Content */}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                {/* Solved Stats Grid */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    {/* Circle Chart Card */}
-                    <div style={{ background: "#171717", borderRadius: "12px", padding: "1.5rem", border: "1px solid #262626", display: "flex", gap: "1.5rem", alignItems: "center" }}>
-                        <div style={{ position: "relative", width: "100px", height: "100px", borderRadius: "50%", border: "8px solid #262626", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <div style={{ textAlign: "center" }}>
-                                <div style={{ fontSize: "1.5rem", fontWeight: 700, lineHeight: 1 }}>326</div>
-                                <div style={{ fontSize: "0.8rem", color: "#737373" }}>Solved</div>
-                            </div>
-                        </div>
-                        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-                            {[{ l: "Easy", c: "#22c55e", v: 84, t: 992 }, { l: "Medium", c: "#eab308", v: 185, t: 1986 }, { l: "Hard", c: "#ef4444", v: 58, t: 900 }].map(item => (
-                                <div key={item.l} style={{ display: "flex", alignItems: "center", fontSize: "0.85rem" }}>
-                                    <span style={{ width: "50px", color: "#a3a3a3" }}>{item.l}</span>
-                                    <div style={{ flex: 1, height: "6px", background: "#262626", borderRadius: "3px", overflow: "hidden", margin: "0 0.8rem" }}>
-                                        <div style={{ width: `${(item.v / item.t) * 100}%`, height: "100%", background: item.c }}></div>
+            <div className={styles.rightContent}>
+                {/* Stats Grid */}
+                <div className={styles.statsGrid}>
+                    <motion.div className={`${styles.card} ${styles.solvedStatsCard}`} variants={itemVariants}>
+                        <CircularProgress val={326} total={3878} color="var(--primary)" />
+                        <div className={styles.difficultyList}>
+                            {[
+                                { l: "Easy", c: "var(--success)", v: 142, t: 992 },
+                                { l: "Medium", c: "var(--warning)", v: 126, t: 1986 },
+                                { l: "Hard", c: "var(--error)", v: 58, t: 900 }
+                            ].map(item => (
+                                <div key={item.l} className={styles.difficultyItem}>
+                                    <span className={styles.difficultyLabel}>{item.l}</span>
+                                    <div className={styles.progressBar}>
+                                        <motion.div
+                                            className={styles.progressBarFill}
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${(item.v / item.t) * 100}%` }}
+                                            transition={{ duration: 1, delay: 0.5 }}
+                                            style={{ background: item.c }}
+                                        />
                                     </div>
-                                    <span style={{ color: "#d4d4d4", fontWeight: 500 }}>{item.v}/{item.t}</span>
+                                    <span className={styles.difficultyValue}>{item.v}<span style={{ color: '#525252', fontSize: '0.7rem' }}>/{item.t}</span></span>
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
 
-                    {/* Badges Card */}
-                    <div style={{ background: "#171717", borderRadius: "12px", padding: "1.5rem", border: "1px solid #262626" }}>
-                        <div style={{ fontSize: "1rem", fontWeight: 600, marginBottom: "1rem" }}>Badges <span style={{ color: "#737373", fontSize: "0.9rem", marginLeft: "0.5rem" }}>4</span></div>
-                        <div style={{ display: "flex", gap: "1rem" }}>
-                            {[1, 2, 3].map(i => (
-                                <div key={i} style={{ width: 50, height: 50, background: "#333", borderRadius: "50%" }}></div>
+                    <motion.div className={`${styles.card} ${styles.badgesCard}`} variants={itemVariants}>
+                        <div className={styles.badgesHeader}>
+                            <h3 style={{ fontSize: "1rem", margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Trophy size={18} color="var(--warning)" /> Achieved Badges
+                            </h3>
+                            <span style={{ color: "var(--primary)", fontSize: "0.8rem", fontWeight: 600, cursor: 'pointer' }}>View All</span>
+                        </div>
+                        <div className={styles.badgesGrid}>
+                            {[
+                                { icon: <Flame size={24} color="#f97316" />, label: "7 Day Streak" },
+                                { icon: <Target size={24} color="#8b5cf6" />, label: "Problem Solver" },
+                                { icon: <Trophy size={24} color="#eab308" />, label: "Top 100" },
+                                { icon: <Code2 size={24} color="#06b6d4" />, label: "Newbie" }
+                            ].map((badge, i) => (
+                                <motion.div
+                                    key={i}
+                                    className={styles.badgeItem}
+                                    title={badge.label}
+                                    whileHover={{ y: -10, scale: 1.1 }}
+                                >
+                                    <div className={styles.badgeInner}>
+                                        {badge.icon}
+                                    </div>
+                                </motion.div>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
 
                 {/* Heatmap */}
-                <ContributionGraph
-                    submissions={submissions}
-                    totalSubmissions={submissions.length}
-                />
+                <motion.div className={styles.card} style={{ padding: '0.5rem' }} variants={itemVariants}>
+                    <ContributionGraph
+                        submissions={submissions}
+                        totalSubmissions={submissions.length}
+                    />
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     );
 }

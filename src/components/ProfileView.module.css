@@ -1,0 +1,365 @@
+.profileContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.leftSidebar {
+    flex: 0 0 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card {
+    background: rgba(23, 23, 23, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px -2px rgba(0, 0, 0, 0.4);
+    background: rgba(28, 28, 28, 0.8);
+}
+
+.profileHeader {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.avatarContainer {
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.avatarContainer:hover {
+    transform: scale(1.05);
+}
+
+.avatar {
+    border-radius: 16px;
+    background: #333;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.username {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+}
+
+.handle {
+    color: #a3a3a3;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.statsRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #a3a3a3;
+    margin-top: 0.5rem;
+}
+
+.rankValue {
+    color: #fff;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.editButton {
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 10px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.editButton:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+}
+
+.settingsButton {
+    padding: 0.6rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    color: #a3a3a3;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.settingsButton:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.socialLink {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #d4d4d4;
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.socialLink:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    transform: translateX(4px);
+}
+
+.skillBadge {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #d4d4d4;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+}
+
+.skillBadge:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.rightContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.solvedStatsCard {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.progressCircleWrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.progressCircleSvg {
+    transform: rotate(-90deg);
+}
+
+.progressCircleBg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 8;
+}
+
+.progressCircleValue {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease-in-out;
+}
+
+.progressCircleText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.solvedCount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #fff;
+}
+
+.solvedLabel {
+    font-size: 0.75rem;
+    color: #737373;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.difficultyList {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.difficultyItem {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.difficultyLabel {
+    width: 60px;
+    color: #a3a3a3;
+    font-weight: 500;
+}
+
+.progressBar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0 1rem;
+}
+
+.progressBarFill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.difficultyValue {
+    color: #d4d4d4;
+    font-weight: 600;
+    width: 60px;
+    text-align: right;
+}
+
+.badgesCard {
+    display: flex;
+    flex-direction: column;
+}
+
+.badgesHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.badgesGrid {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.badgeItem {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.badgeItem::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(139, 92, 246, 0.2), transparent);
+    animation: rotate 4s linear infinite;
+    z-index: 0;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.badgeInner {
+    width: 48px;
+    height: 48px;
+    background: #171717;
+    border-radius: 50%;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badgeItem:hover {
+    transform: translateY(-5px) scale(1.1);
+    border-color: var(--primary);
+}
+
+@media (max-width: 1024px) {
+    .profileContainer {
+        flex-direction: column;
+    }
+
+    .leftSidebar {
+        flex: none;
+        width: 100%;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+}
